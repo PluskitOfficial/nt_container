@@ -1,0 +1,8 @@
+FROM python:3.7
+
+WORKDIR /www
+COPY nt_s_common/requirements.txt .
+
+RUN pip install -i https://pypi.doubanio.com/simple/ -r requirements.txt
+
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime

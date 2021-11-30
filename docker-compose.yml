@@ -1,0 +1,68 @@
+version: "3"
+services: 
+  ####################### tools
+  nt_s_tools:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile_python
+    command: gunicorn -c nt_s_tools/gunicorn.conf.py nt_s_tools.wsgi:application
+    restart: always
+    container_name: nt-s-tools
+    ports:
+      - "22010:10010"
+    env_file:
+      - dev.env
+    volumes:
+      - ./nt_s_common:/www/nt_s_common:cached
+      - ./nt_s_tools:/www/nt_s_tools:cached
+    networks:
+      - dev_network
+    logging: 
+      driver: "json-file"
+      options: 
+        max-size: "500m"
+
+  ####################### nt_web
+  nt_web:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile_web
+    command: pm2-runtime start npm --name "nt-web" -- run start 
+    restart: always
+    container_name: nt-web
+    ports:
+      - "22001:3000"
+    env_file:
+      - dev.env
+    networks:
+      - dev_network
+    logging: 
+      driver: "json-file"
+      options: 
+        max-size: "500m"
+
+  ######################## 定时同步任务
+  nt_cron_sync_data:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile_python
+    container_name: nt_cron_sync_data
+    command: python /www/nt_s_common/cron/sync_data.py
+    env_file:
+      - dev.env
+    restart: always
+    volumes:
+      - ./nt_s_common:/www/nt_s_common:cached
+    networks:
+      - dev_network
+    logging: 
+      driver: "json-file"
+      options: 
+        max-size: "500m"
+
+# 网络配置
+networks:
+  dev_network:
+    external:
+      name: dev_network
+

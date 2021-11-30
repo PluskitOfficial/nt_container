@@ -1,0 +1,26 @@
+FROM node:14 as builder
+
+WORKDIR /app/frontend
+COPY ./nt_web/frontend/package.json .
+RUN npm install
+
+WORKDIR /app/backend
+COPY ./nt_web/backend/package.json .
+RUN npm install
+COPY ./nt_web/backend .
+
+WORKDIR /app/frontend
+COPY ./nt_web/frontend .
+RUN npm run build
+
+######################## 
+FROM node:14
+
+RUN npm install pm2 -g
+
+WORKDIR /app/backend
+COPY --from=builder /app/backend .
+
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+EXPOSE 3000

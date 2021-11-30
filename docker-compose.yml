@@ -41,7 +41,7 @@ services:
       options: 
         max-size: "500m"
 
-  ######################## 定时同步任务
+  ######################## crontab
   nt_cron_sync_data:
     build:
       context: .
@@ -60,7 +60,7 @@ services:
       options: 
         max-size: "500m"
 
-# 网络配置
+# network config
 networks:
   dev_network:
     external:

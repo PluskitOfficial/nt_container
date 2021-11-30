@@ -1,6 +1,7 @@
 The purpose of this project is to use docker to quickly deploy
 
 First clone https://github.com/PluskitOfficial/nt_container
+
 Then enter the nt_container directory and clone in turn:
 - https://github.com/PluskitOfficial/nt_s_common
 - https://github.com/PluskitOfficial/nt_s_tools
@@ -48,5 +49,19 @@ XM_APP_SECRET=your app secret
 Use the docker command to start the service: 
 `docker-compose up -d`
 
-Then you can visit  http://127.0.0.1:22001 
+## step 4
+The server has been started and the database needs to be initialized:
+
+First enter the container： 
+`docker exec -it nt-s-tools bash`
+
+Then execute in the container: 
+ - `cd nt_s_tools`
+ - `python manage.py makemigrations`
+ - `python manage.py migrate`
+
+
+Then you can visit  http://127.0.0.1:22001 。
+There may be some data that is not available now. This needs to be obtained by a scheduled task. The specific acquisition time can be found in the nt_s_common/cron/sync_data.py file.
+
 
